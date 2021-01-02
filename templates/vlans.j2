@@ -1,0 +1,6 @@
+{% if pillar["vlans"] is defined and pillar["vlans"] is not none -%}
+{%   for vlan in pillar["vlans"] -%}
+vlan {{ vlan }}
+!
+{%   endfor -%}
+{% endif -%}
