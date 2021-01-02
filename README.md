@@ -61,29 +61,6 @@ docker ps | grep salt
 docker exec -it salt bash
 ```
 
-## Print basic information about the operating system
-
-```
-uname -a
-lsb_release -a
-```
-
-## List the installed python packages 
-
-```
-pip3 list
-pip3 freeze 
-```
-
-## Check the SaltStack Version 
-
-```
-salt --version
-salt-master --version
-salt-minion --version
-salt-proxy --version
-```
-
 ## SaltStack default configuration directory and configuration files 
 
 ### Default configuration directory
@@ -366,6 +343,36 @@ salt -G 'os:eos' state.sls push_config
 
 # Troubleshooting 
 
+
+## Move to the container 
+
+```
+docker exec -it salt bash
+```
+
+## Print basic information about the operating system
+
+```
+uname -a
+lsb_release -a
+```
+
+## List the installed python packages 
+
+```
+pip3 list
+pip3 freeze 
+```
+
+## Check the SaltStack Version 
+
+```
+salt --version
+salt-master --version
+salt-minion --version
+salt-proxy --version
+```
+
 ## SaltStack help
 
 ```
@@ -411,19 +418,6 @@ ps -ef | grep salt
 kill PID
 ```
 
-## Check port connectivity 
-
-You can check port connectivity with the nc command:
-```
-nc -v -z < salt.master.ip > 4505
-nc -v -z < salt.master.ip > 4506
-```
-Example: 
-```
-nc -v -z 172.17.0.2 4505
-nc -v -z 172.17.0.2 4506
-```
-
 ## tcpdump
 
 run this command on the master if you need to display received packets
@@ -445,6 +439,32 @@ run this command to fire an event:
 ```
 salt "minion1" event.fire_master '{"data": "message to be sent in the event"}' 'tag/blabla'
 ```
+
+## Check port connectivity 
+
+From outside the container, check port connectivity with the nc command:  
+
+From the host where the container runs: 
+```
+nc -v -z < salt_container_ip > 4505
+nc -v -z < salt_container_ip > 4506
+```
+Example if the container ip is 172.17.0.2: 
+```
+nc -v -z 172.17.0.2 4505
+nc -v -z 172.17.0.2 4506
+```
+
+From another host: 
+```
+nc -v -z < host_that_has_the_container > 4505
+nc -v -z < host_that_has_the_container > 4506
+```
+Example if the host ip where the container runs is 10.83.28.180: 
+```
+nc -v -z 10.83.28.180 4505
+nc -v -z 10.83.28.180 4506
+``` 
 
 # More content about SaltStack and Arista Networks 
 
