@@ -6,13 +6,13 @@ The content of this repository has been designed for one single SaltStack contai
 
 # How to use this repository 
 
-## clone the repository 
+## Clone the repository 
 
 ```
 git clone https://github.com/ksator/saltstack_demo_with_eos_arista.git
 ```
 
-## move to the local repository
+## Move to the local repository
 
 ```
 cd saltstack_demo_with_eos_arista
@@ -68,7 +68,7 @@ uname -a
 lsb_release -a
 ```
 
-## list the installed python packages 
+## List the installed python packages 
 
 ```
 pip3 list
@@ -92,11 +92,18 @@ salt-proxy --version
 ls /etc/salt/
 ```
 
-### Default configuration files
+### Configuration files
 
+[master](master) 
 ```
 more /etc/salt/master
+```
+[proxy](proxy)
+```
 more /etc/salt/proxy
+```
+[minion](minion)
+```
 more /etc/salt/minion
 ```
 
@@ -104,7 +111,7 @@ more /etc/salt/minion
 
 This can be done using Ubuntu services or SaltStack command-line 
 
-### using Ubuntu services 
+### Using Ubuntu services 
 
 List all the services 
 ```
@@ -120,7 +127,7 @@ service salt-minion start
 service salt-minion status
 ```
 
-### Using SaltStack command-line
+### Or using SaltStack command-line
 
 Start as a daemon (in background)
 ```
@@ -210,14 +217,14 @@ salt "leaf*" test.ping
 salt '*' test.ping
 ```
 
-### using grains
+### Using grains
 ```
 salt -G 'os:eos' test.ping
 salt -G 'os:eos' cmd.run 'uname'
 salt -G 'os:eos' net.cli 'show version' 
 ```
 
-### using nodegroups
+### Using nodegroups
 
 Include this in the [master](master) configuration file:
 ```
@@ -365,7 +372,7 @@ salt -G 'os:eos' state.sls push_config
 salt --help
 ```
 
-## verbose 
+## Verbose 
 
 Use `-v` to also display the job id:
 ```
@@ -404,7 +411,7 @@ ps -ef | grep salt
 kill PID
 ```
 
-## check port connectivity 
+## Check port connectivity 
 
 You can check port connectivity with the nc command:
 ```
@@ -428,7 +435,7 @@ Example
 tcpdump -i eth0 port 5001 -vv
 ```
 
-## watch the event bus
+## Watch the event bus
 
 run this command on the master if you need to watch the event bus:
 ```
