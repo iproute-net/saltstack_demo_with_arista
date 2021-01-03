@@ -24,7 +24,7 @@ cd saltstack_demo_with_eos_arista
 docker build --tag salt_eos:1.5 .
 ```
 
-## List images and verify
+List images and verify
 
 ```
 docker images | grep salt_eos
@@ -50,7 +50,7 @@ docker run -d -t --rm --name salt \
 salt_eos:1.5
 ```
 
-## List containers and verify
+List containers and verify
 
 ```
 docker ps | grep salt
@@ -176,7 +176,7 @@ salt 'leaf1' pillar.ls
 salt 'leaf1' pillar.items
 ```
 ```
-salt 'leaf1' pillar.item pyeapi
+salt 'leaf1' pillar.item  pyeapi vlans
 ```
 
 ## Flexible targeting system
@@ -223,9 +223,9 @@ salt 'leaf1' sys.list_modules 'napalm*'
 ## List the functions for a module
 
 ```
-salt '*' sys.list_functions net
-salt '*' sys.list_functions napalm
-salt '*' sys.list_functions napalm_net
+salt 'leaf1' sys.list_functions net
+salt 'leaf1' sys.list_functions napalm
+salt 'leaf1' sys.list_functions napalm_net
 ```
 
 ## Get the documentation for a module
@@ -233,17 +233,18 @@ salt '*' sys.list_functions napalm_net
 Example with Napalm
 
 ```
-salt "*" sys.doc net
-salt "*" sys.doc net.traceroute
+salt 'leaf1' sys.doc net
+salt 'leaf1' sys.doc net.traceroute
 ```
 or
 ```
-salt "*" net  -d
-salt "*" net.traceroute  -d
+salt 'leaf1' net  -d
+salt 'leaf1' net.traceroute  -d
 ```
 ## Napalm proxy
 
-This repository uses the Napalm proxy.
+This repository uses the [Napalm proxy](https://github.com/saltstack/salt/blob/master/salt/proxy/napalm.py)
+
 
 Napalm proxy pillar configuration example ([pillar/leaf1.sls](pillar/leaf1.sls)):
 ```
@@ -255,7 +256,13 @@ proxy:
   password: ansible
 ```
 
-Napalm proxy usage examples (we can use `net` or `napalm.net`):
+The Napalm proxy uses different modules to interact with network devices.
+### net or napalm_net module
+
+[net or napalm_net module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py) examples:
+
+we can use the `net` or `napalm.net` commands:
+
 ```
 salt 'leaf*' net.load_config text='vlan 8' test=True
 ```
@@ -283,7 +290,21 @@ salt 'leaf1' net.interfaces
 salt 'leaf1' net.ipaddrs
 salt 'leaf1' net.config source=running --output-file=leaf1_running.cfg
 ```
+### napalm module
+
+[napalm module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_mod.py) examples:
+
+```
+salt 'leaf1' napalm.alive
+salt 'leaf1' napalm.pyeapi_run_commands 'show version' encoding=json
+salt 'leaf1' napalm.pyeapi_run_commands 'show version' --out=raw
+salt 'leaf1' napalm.pyeapi_run_commands 'show version' --out=json
+```
+`napalm.pyeapi_run_commands` forwards to `pyeapi.run_commands`
+
 ## Netmiko proxy
+
+The [Netmiko execution module](https://github.com/saltstack/salt/blob/master/salt/modules/netmiko_mod.py) can be used with a [Netmiko proxy](https://github.com/saltstack/salt/blob/master/salt/proxy/netmiko_px.py)
 
 This repository uses the Napalm proxy.
 You can replace it with a Netmiko proxy.
@@ -298,14 +319,13 @@ proxy:
   password: ansible
 ```
 
-Netmiko proxy usage example:
+Examples:
 ```
 salt '*' netmiko.send_command -d
 ```
 ```
 salt 'spine1' netmiko.send_command 'show version'
 ```
-
 ## Templates
 
 ### Check if a template renders
@@ -324,8 +344,16 @@ salt -G 'os:eos' state.sls render
 ls  salt/eos/*cfg
 ```
 
-## pyeapi
+## pyeapi Execution module
 
+The [pyeapi Execution module](https://github.com/saltstack/salt/blob/master/salt/modules/arista_pyeapi.py) can be used to interact with Arista switches.
+It is flexible enough to execute the commands both when running under an pyeapi Proxy, as well as running under a Regular Minion by specifying the connection arguments, i.e., `host`, `username`, `password` `transport` etc.
+
+Examples:
+```
+salt 'leaf1' pyeapi.run_commands 'show version'
+salt 'leaf1' pyeapi.get_config as_string=True
+```
 ### Run pyeapi execution module in a sls file with a template
 
 The file [push_vlans.sls](states/push_vlans.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
