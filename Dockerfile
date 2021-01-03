@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-RUN apt-get update && apt-get -y upgrade && apt-get install python3-pip build-essential libssl-dev libffi-dev python3-dev tree net-tools wget git vim curl tcpdump -y
+RUN apt-get update && apt-get -y upgrade && apt-get install python3-pip build-essential libssl-dev libffi-dev python3-dev tree net-tools wget git vim curl tcpdump iputils-ping -y
 ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN pip3 install --upgrade pyOpenSSL

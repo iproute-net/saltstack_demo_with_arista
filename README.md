@@ -176,6 +176,9 @@ salt 'leaf1' pillar.ls
 salt 'leaf1' pillar.items
 ```
 ```
+salt 'leaf1' pillar.get pyeapi
+```
+```
 salt 'leaf1' pillar.item  pyeapi vlans
 ```
 
