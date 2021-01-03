@@ -257,9 +257,9 @@ proxy:
 ```
 
 The Napalm proxy uses different modules to interact with network devices.
-### net or napalm_net module
+### net module (napalm_net module)
 
-[net or napalm_net module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py) examples:
+[net module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py) examples:
 
 we can use the `net` or `napalm.net` commands:
 
@@ -344,9 +344,9 @@ salt -G 'os:eos' state.sls render
 ls  salt/eos/*cfg
 ```
 
-## pyeapi Execution module
+## pyeapi execution module
 
-The [pyeapi Execution module](https://github.com/saltstack/salt/blob/master/salt/modules/arista_pyeapi.py) can be used to interact with Arista switches.
+The [pyeapi execution module](https://github.com/saltstack/salt/blob/master/salt/modules/arista_pyeapi.py) can be used to interact with Arista switches.
 It is flexible enough to execute the commands both when running under an pyeapi Proxy, as well as running under a Regular Minion by specifying the connection arguments, i.e., `host`, `username`, `password` `transport` etc.
 
 Examples:
@@ -402,8 +402,6 @@ After loading the modules, you can use them
 ## Source code
 
 https://github.com/saltstack/salt
-https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py
-https://github.com/saltstack/salt/blob/master/salt/modules/napalm_mod.py
 ## Move to the container
 
 ```
