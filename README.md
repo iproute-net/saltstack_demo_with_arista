@@ -1,12 +1,12 @@
-# About this repository 
+# About this repository
 
-Arista EOS automation demo using SaltStack.  
-SaltStack is running in one single container.  
-The content of this repository has been designed for one single SaltStack container. 
+Arista EOS automation demo using SaltStack.
+SaltStack is running in one single container.
+The content of this repository has been designed for one single SaltStack container.
 
-# How to use this repository 
+# How to use this repository
 
-## Clone the repository 
+## Clone the repository
 
 ```
 git clone https://github.com/ksator/saltstack_demo_with_eos_arista.git
@@ -18,23 +18,23 @@ git clone https://github.com/ksator/saltstack_demo_with_eos_arista.git
 cd saltstack_demo_with_eos_arista
 ```
 
-## Build an image from the Dockerfile 
+## Build an image from the Dockerfile
 
 ```
-docker build --tag salt_eos:1.4 .
+docker build --tag salt_eos:1.5 .
 ```
 
-## List images and verify 
+## List images and verify
 
 ```
 docker images | grep salt_eos
 ```
 
-## Update the SaltStack pillar 
+## Update the SaltStack pillar
 
-Update the [pillar](pillar) with your devices IP/username/password 
+Update the [pillar](pillar) with your devices IP/username/password
 
-## Create a container 
+## Create a container
 
 ```
 docker run -d -t --rm --name salt \
@@ -46,55 +46,53 @@ docker run -d -t --rm --name salt \
 -v $PWD/states/.:/srv/salt/states/. \
 -v $PWD/templates/.:/srv/salt/templates/. \
 -v $PWD/eos/.:/srv/salt/eos \
-salt_eos:1.4
+-v $PWD/_modules/.:/srv/salt/_modules/. \
+salt_eos:1.5
 ```
 
-## List containers and verify 
+## List containers and verify
 
 ```
 docker ps | grep salt
 ```
 
-## Move to the container 
+## Move to the container
 
 ```
 docker exec -it salt bash
 ```
 
-## SaltStack default configuration directory and configuration files 
+## SaltStack configuration directory and configuration files
 
-### Default configuration directory
-
+Configuration directory
 ```
 ls /etc/salt/
 ```
 
-### Configuration files
-
-[master](master) 
+[master](master) configuration file
 ```
 more /etc/salt/master
 ```
-[proxy](proxy)
+[proxy](proxy) configuration file
 ```
 more /etc/salt/proxy
 ```
-[minion](minion)
+[minion](minion) configuration file
 ```
 more /etc/salt/minion
 ```
 
-## Start salt-master and salt-minion 
+## Start salt-master and salt-minion
 
-This can be done using Ubuntu services or SaltStack command-line 
+This can be done using Ubuntu services or SaltStack command-line
 
-### Using Ubuntu services 
+### Using Ubuntu services
 
-List all the services 
+List all the services
 ```
 service --status-all
 ```
-we can use start/stop/restart/status.  
+we can use start/stop/restart/status.
 ```
 service salt-master start
 service salt-master status
@@ -115,7 +113,7 @@ salt-minion -d
 ps -ef | grep salt
 ```
 
-## Start a salt-proxy daemon for each device 
+## Start a salt-proxy daemon for each device
 
 ```
 salt-proxy --proxyid=leaf1 -d
@@ -127,9 +125,9 @@ salt-proxy --proxyid=spine2 -d
 ps -ef | grep proxy
 ```
 
-## Check if the keys are accepted 
+## Check if the keys are accepted
 
-Help 
+Help
 ```
 salt-key --help
 ```
@@ -144,18 +142,18 @@ Run this command to accept one pending key
 salt-key -a minion1 -y
 ```
 
-Run this command to accept all pending keys 
+Run this command to accept all pending keys
 ```
 salt-key -A -y
 ```
-Or use this in the [master](master) configuration file to auto accept keys 
+Or use this in the [master](master) configuration file to auto accept keys
 ```
 auto_accept: True
 ```
 
-## Test if the minion and proxies are up and responding to the master 
+## Test if the minion and proxies are up and responding to the master
 
-It is not an ICMP ping 
+It is not an ICMP ping
 ```
 salt minion1 test.ping
 salt leaf1 test.ping
@@ -183,7 +181,7 @@ salt 'leaf1' pillar.item pyeapi
 
 ## Flexible targeting system
 
-### Using list 
+### Using list
 ```
 salt -L "minion1, leaf1" test.ping
 ```
@@ -198,16 +196,16 @@ salt '*' test.ping
 ```
 salt -G 'os:eos' test.ping
 salt -G 'os:eos' cmd.run 'uname'
-salt -G 'os:eos' net.cli 'show version' 
+salt -G 'os:eos' net.cli 'show version'
 ```
 
 ### Using nodegroups
 
 Include this in the [master](master) configuration file:
 ```
-nodegroups: 
+nodegroups:
  leaves: 'L@leaf1,leaf2'
- spines: 
+ spines:
   - spine1
   - spine2
  eos: 'G@os:eos'
@@ -217,24 +215,35 @@ salt -N eos test.ping
 salt -N leaves test.ping
 salt -N spines test.ping
 ```
-
-## Return the documentation for a module
-
-Example with Napalm 
+## List modules
 
 ```
-salt "*" net  -d
-salt "*" net.traceroute  -d
+salt 'leaf1' sys.list_modules 'napalm*'
 ```
-or
+## List the functions for a module
+
+```
+salt '*' sys.list_functions net
+salt '*' sys.list_functions napalm
+salt '*' sys.list_functions napalm_net
+```
+
+## Get the documentation for a module
+
+Example with Napalm
+
 ```
 salt "*" sys.doc net
 salt "*" sys.doc net.traceroute
 ```
+or
+```
+salt "*" net  -d
+salt "*" net.traceroute  -d
+```
+## Napalm proxy
 
-## Napalm proxy 
-
-This repository uses the Napalm proxy.  
+This repository uses the Napalm proxy.
 
 Napalm proxy pillar configuration example ([pillar/leaf1.sls](pillar/leaf1.sls)):
 ```
@@ -246,21 +255,24 @@ proxy:
   password: ansible
 ```
 
-Napalm proxy usage examples:
+Napalm proxy usage examples (we can use `net` or `napalm.net`):
 ```
 salt 'leaf*' net.load_config text='vlan 8' test=True
 ```
-The file [vlan.cfg](eos/vlan.cfg) is available in the master file server  
+The file [vlan.cfg](eos/vlan.cfg) is available in the master file server
 ```
-salt 'leaf*' net.load_config filename='salt://vlan.cfg' test=True 
+salt 'leaf*' net.load_config filename='salt://vlan.cfg' test=True
 ```
 ```
 salt 'leaf*' net.cli 'show version' 'show vlan'
 salt 'leaf1' net.cli 'show vlan | json'
+salt 'leaf1' net.cli 'show version' --out=json
 salt 'leaf1' net.cli 'show version' --output=json
+salt 'leaf1' net.cli 'show vlan' --output-file=show_vlan.txt
+salt 'leaf1' net.cli 'show version'  > show_version.txt
 ```
 ```
-salt 'leaf1' net.lldp 
+salt 'leaf1' net.lldp
 salt 'leaf1' net.lldp interface='Ethernet1'
 ```
 ```
@@ -269,13 +281,13 @@ salt 'leaf1' net.connected
 salt 'leaf1' net.facts
 salt 'leaf1' net.interfaces
 salt 'leaf1' net.ipaddrs
+salt 'leaf1' net.config source=running --output-file=leaf1_running.cfg
 ```
-
 ## Netmiko proxy
 
-This repository uses the Napalm proxy.  
-You can replace it with a Netmiko proxy.  
-Here's an example of Netmiko proxy pillar:  
+This repository uses the Napalm proxy.
+You can replace it with a Netmiko proxy.
+Here's an example of Netmiko proxy pillar:
 ```
 proxy:
   proxytype: netmiko
@@ -294,29 +306,29 @@ salt '*' netmiko.send_command -d
 salt 'spine1' netmiko.send_command 'show version'
 ```
 
-## Templates 
+## Templates
 
-### Check if a template renders 
+### Check if a template renders
 
-The file [vlans.j2](templates/vlans.j2) is in the master file server  
+The file [vlans.j2](templates/vlans.j2) is in the master file server
 
 ```
-salt '*' slsutil.renderer salt://vlans.j2 'jinja' 
+salt '*' slsutil.renderer salt://vlans.j2 'jinja'
 ```
 
-### Render a template 
+### Render a template
 
-The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server  
+The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 ```
 salt -G 'os:eos' state.sls render
 ls  salt/eos/*cfg
-``` 
+```
 
-## pyeapi 
+## pyeapi
 
-### Run pyeapi execution module in a sls file with a template 
+### Run pyeapi execution module in a sls file with a template
 
-The file [push_vlans.sls](states/push_vlans.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server  
+The file [push_vlans.sls](states/push_vlans.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 
 ```
 salt 'leaf1' state.sls push_vlans
@@ -325,26 +337,46 @@ or
 ```
 salt 'leaf1' state.apply push_vlans
 ```
-Verify: 
+Verify:
 ```
 salt 'leaf1' net.cli 'show vlan'
 ```
-### Run pyeapi execution module in a sls file with a file 
+### Run pyeapi execution module in a sls file with a file
 
-The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server  
+The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 ```
 salt -G 'os:eos' state.sls render
 ls  salt/eos/*cfg
 ```
-The file [push_config.sls](states/push_config.sls) is in the master file server  
+The file [push_config.sls](states/push_config.sls) is in the master file server
 ```
-salt -G 'os:eos' state.sls push_config  
+salt -G 'os:eos' state.sls push_config
 ```
 
-# Troubleshooting 
+## Writing Execution Modules
 
+A Salt execution module is a Python module placed in a directory called `_modules` at the root of the Salt fileserver.
+In this setup the directory `_modules` is `/srv/salt/_modules`
 
-## Move to the container 
+The execution module [_modules/custom_eos.py](_modules/custom_eos.py) is `/srv/salt/_modules/custom_eos.py`
+```
+salt 'leaf1' custom_eos.version
+salt 'leaf1' custom_eos.model
+```
+If you create a new execution module, run this command to sync execution modules placed in the `_modules` directory:
+```
+salt '*' saltutil.sync_modules
+```
+After loading the modules, you can use them
+
+# Troubleshooting
+
+## Source code
+
+https://github.com/saltstack/salt
+https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py
+https://github.com/saltstack/salt/blob/master/salt/modules/napalm_mod.py
+## Move to the container
 
 ```
 docker exec -it salt bash
@@ -357,14 +389,14 @@ uname -a
 lsb_release -a
 ```
 
-## List the installed python packages 
+## List the installed python packages
 
 ```
 pip3 list
-pip3 freeze 
+pip3 freeze
 ```
 
-## Check the SaltStack Version 
+## Check the SaltStack Version
 
 ```
 salt --version
@@ -379,11 +411,11 @@ salt-proxy --version
 salt --help
 ```
 
-## Verbose 
+## Verbose
 
 Use `-v` to also display the job id:
 ```
-salt 'leaf1' net.cli 'show version' 'show vlan' -v 
+salt 'leaf1' net.cli 'show version' 'show vlan' -v
 ```
 
 ## Start SaltStack in foreground with a debug log level
@@ -398,7 +430,7 @@ salt-minion -l debug
 salt-proxy --proxyid=leaf1 -l debug
 ```
 ```
-ps -ef | grep salt 
+ps -ef | grep salt
 ```
 
 ## Check log
@@ -435,40 +467,40 @@ run this command on the master if you need to watch the event bus:
 ```
 salt-run state.event pretty=True
 ```
-run this command to fire an event: 
+run this command to fire an event:
 ```
 salt "minion1" event.fire_master '{"data": "message to be sent in the event"}' 'tag/blabla'
 ```
 
-## Check port connectivity 
+## Check port connectivity
 
-From outside the container, check port connectivity with the nc command:  
+From outside the container, check port connectivity with the nc command:
 
-From the host where the container runs: 
+From the host where the container runs:
 ```
 nc -v -z < salt_container_ip > 4505
 nc -v -z < salt_container_ip > 4506
 ```
-Example if the container ip is 172.17.0.2: 
+Example if the container ip is 172.17.0.2:
 ```
 nc -v -z 172.17.0.2 4505
 nc -v -z 172.17.0.2 4506
 ```
 
-From another host: 
+From another host:
 ```
 nc -v -z < host_that_has_the_container > 4505
 nc -v -z < host_that_has_the_container > 4506
 ```
-Example if the host ip where the container runs is 10.83.28.180: 
+Example if the host ip where the container runs is 10.83.28.180:
 ```
 nc -v -z 10.83.28.180 4505
 nc -v -z 10.83.28.180 4506
-``` 
+```
 
-# More content about SaltStack and Arista Networks 
+# More content about SaltStack and Arista Networks
 
-- http://salt.avd.sh/ and https://github.com/arista-netdevops-community/salt_eos_automation 
-- https://eos.arista.com/arista-salt-integration/ 
+- http://salt.avd.sh/ and https://github.com/arista-netdevops-community/salt_eos_automation
+- https://eos.arista.com/arista-salt-integration/
 
 
