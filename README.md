@@ -246,10 +246,11 @@ salt 'leaf1' net.traceroute  -d
 ```
 ## Napalm proxy
 
-This repository uses the [Napalm proxy](https://github.com/saltstack/salt/blob/master/salt/proxy/napalm.py)
+This repository uses the Napalm proxy
 
+[Napalm proxy source code](https://github.com/saltstack/salt/blob/master/salt/proxy/napalm.py)
 
-Napalm proxy pillar configuration example ([pillar/leaf1.sls](pillar/leaf1.sls)):
+Pillar example for Napalm proxy ([pillar/leaf1.sls](pillar/leaf1.sls)):
 ```
 proxy:
   proxytype: napalm
@@ -262,7 +263,9 @@ proxy:
 The Napalm proxy uses different modules to interact with network devices.
 ### net module (napalm_net module)
 
-[net module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py) examples:
+[net module (napalm_net module) source code](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py)
+
+Examples:
 
 we can use the `net` or `napalm.net` commands:
 
@@ -295,7 +298,9 @@ salt 'leaf1' net.config source=running --output-file=leaf1_running.cfg
 ```
 ### napalm module
 
-[napalm module](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_mod.py) examples:
+[napalm module source code](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_mod.py)
+
+Examples:
 
 ```
 salt 'leaf1' napalm.alive
@@ -307,11 +312,15 @@ salt 'leaf1' napalm.pyeapi_run_commands 'show version' --out=json
 
 ## Netmiko proxy
 
-The [Netmiko execution module](https://github.com/saltstack/salt/blob/master/salt/modules/netmiko_mod.py) can be used with a [Netmiko proxy](https://github.com/saltstack/salt/blob/master/salt/proxy/netmiko_px.py)
+The Netmiko execution module can be used with a Netmiko proxy
+
+[Netmiko execution module source code](https://github.com/saltstack/salt/blob/master/salt/modules/netmiko_mod.py)
+
+[Netmiko proxy source code](https://github.com/saltstack/salt/blob/master/salt/proxy/netmiko_px.py)
 
 This repository uses the Napalm proxy.
 You can replace it with a Netmiko proxy.
-Here's an example of Netmiko proxy pillar:
+Here's an example of pillar for Netmiko proxy:
 ```
 proxy:
   proxytype: netmiko
@@ -344,7 +353,7 @@ salt '*' slsutil.renderer salt://vlans.j2 'jinja'
 The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 ```
 salt -G 'os:eos' state.sls render
-ls  salt/eos/*cfg
+ls  /srv/salt/eos/*cfg
 ```
 
 ## pyeapi execution module
@@ -357,7 +366,14 @@ Examples:
 salt 'leaf1' pyeapi.run_commands 'show version'
 salt 'leaf1' pyeapi.get_config as_string=True
 ```
-### Run pyeapi execution module in a sls file with a template
+
+### Run pyeapi execution module in a sls file to collect show commands
+
+```
+salt -G 'os:eos' state.sls collect_commands
+ls /tmp/*/*.json
+```
+### Run pyeapi execution module in a sls file to configure devices with a template
 
 The file [push_vlans.sls](states/push_vlans.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 
@@ -372,12 +388,12 @@ Verify:
 ```
 salt 'leaf1' net.cli 'show vlan'
 ```
-### Run pyeapi execution module in a sls file with a file
+### Run pyeapi execution module in a sls file to configure devices with a file
 
 The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 ```
 salt -G 'os:eos' state.sls render
-ls  salt/eos/*cfg
+ls  /srv/salt/eos/*cfg
 ```
 The file [push_config.sls](states/push_config.sls) is in the master file server
 ```

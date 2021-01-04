@@ -1,10 +1,5 @@
 hostname: leaf1
 
-vlans: 
-   - 100
-   - 200
-   - 300
-   
 proxy:
   proxytype: napalm
   driver: eos
