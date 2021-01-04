@@ -14,6 +14,7 @@ f=open('pillar/top.sls', 'r')
 vars = yaml.load(f.read())
 
 for item in vars['base']:
-    print ('starting salt proxy for device ' +  item)
-    shell_cmd = 'docker exec -it salt salt-proxy -d --proxyid=' + item
-    os.system(shell_cmd)
+    if item != '*':
+        print ('starting salt proxy for device ' +  item)
+        shell_cmd = 'docker exec -it salt salt-proxy -d --proxyid=' + item
+        os.system(shell_cmd)
