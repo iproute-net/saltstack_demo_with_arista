@@ -171,7 +171,7 @@ salt leaf1 test.ping
 salt '*' test.ping
 ```
 
-## Grains
+## Grains module usage examples
 ```
 salt 'leaf1' grains.items
 salt 'leaf1' grains.ls
@@ -180,7 +180,7 @@ salt 'leaf1' grains.ls
 salt 'leaf1' grains.item os vendor version host
 ```
 
-## Pillar
+## Pillar module usage examples
 
 ```
 salt 'leaf1' pillar.ls
@@ -193,7 +193,7 @@ salt 'leaf1' pillar.get pyeapi
 salt 'leaf1' pillar.item  pyeapi vlans
 ```
 
-## SaltStack targeting system
+## About SaltStack targeting system
 
 It is very flexible.
 ### Using list
@@ -230,7 +230,7 @@ salt -N eos test.ping
 salt -N leaves test.ping
 salt -N spines test.ping
 ```
-## SaltStack modules
+## About SaltStack modules
 
 ### List modules
 
@@ -244,6 +244,7 @@ salt 'leaf1' sys.list_functions net
 salt 'leaf1' sys.list_functions napalm
 salt 'leaf1' sys.list_functions napalm_net
 ```
+`net` and `napalm_net` is the same module.
 
 ### Get the documentation for a module
 
@@ -258,7 +259,24 @@ or
 salt 'leaf1' net  -d
 salt 'leaf1' net.traceroute  -d
 ```
-## Napalm proxy
+## About templates
+
+### Check if a template renders
+
+The file [vlans.j2](templates/vlans.j2) is in the master file server
+
+```
+salt '*' slsutil.renderer salt://vlans.j2 'jinja'
+```
+
+### Render a template
+
+The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
+```
+salt -G 'os:eos' state.sls render
+ls  /srv/salt/eos/*cfg
+```
+## Napalm proxy usage examples
 
 This repository uses the Napalm proxy
 
@@ -275,9 +293,10 @@ proxy:
 ```
 
 The Napalm proxy uses different modules to interact with network devices.
-### net module (napalm_net module)
+### net module
 
-[net module (napalm_net module) source code](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py)
+`net` and `napalm_net` is the same module.
+[net module source code](https://github.com/saltstack/salt/blob/master/salt/modules/napalm_network.py)
 
 Examples:
 
@@ -324,7 +343,7 @@ salt 'leaf1' napalm.pyeapi_run_commands 'show version' --out=json
 ```
 `napalm.pyeapi_run_commands` forwards to `pyeapi.run_commands`
 
-## Netmiko proxy
+## Netmiko proxy usage examples
 
 The Netmiko execution module can be used with a Netmiko proxy
 
@@ -352,25 +371,8 @@ salt '*' netmiko.send_command -d
 ```
 salt 'spine1' netmiko.send_command 'show version'
 ```
-## Templates
 
-### Check if a template renders
-
-The file [vlans.j2](templates/vlans.j2) is in the master file server
-
-```
-salt '*' slsutil.renderer salt://vlans.j2 'jinja'
-```
-
-### Render a template
-
-The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
-```
-salt -G 'os:eos' state.sls render
-ls  /srv/salt/eos/*cfg
-```
-
-## pyeapi execution module
+## pyeapi execution module usage examples
 
 The [pyeapi execution module](https://github.com/saltstack/salt/blob/master/salt/modules/arista_pyeapi.py) can be used to interact with Arista switches.
 It is flexible enough to execute the commands both when running under an pyeapi Proxy, as well as running under a Regular Minion by specifying the connection arguments, i.e., `host`, `username`, `password` `transport` etc.
@@ -381,13 +383,15 @@ salt 'leaf1' pyeapi.run_commands 'show version'
 salt 'leaf1' pyeapi.get_config as_string=True
 ```
 
-### Run pyeapi execution module in a sls file to collect show commands
+### How to run pyeapi execution module in a sls file
+
+#### To collect show commands
 
 ```
 salt -G 'os:eos' state.sls collect_commands
 ls /tmp/*/*.json
 ```
-### Run pyeapi execution module in a sls file to configure devices with a template
+#### To configure devices with a template
 
 The file [push_vlans.sls](states/push_vlans.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 
@@ -402,7 +406,7 @@ Verify:
 ```
 salt 'leaf1' net.cli 'show vlan'
 ```
-### Run pyeapi execution module in a sls file to configure devices with a file
+#### To configure devices with a file
 
 The file [render.sls](states/render.sls) and the file [vlans.j2](templates/vlans.j2) are in the master file server
 ```
