@@ -64,10 +64,12 @@ docker exec -it salt bash
 
 ## SaltStack configuration directory and configuration files
 
-Configuration directory
+SaltStack default configuration directory
 ```
 ls /etc/salt/
 ```
+
+Using the above `docker run` command:
 
 [master](master) configuration file
 ```
@@ -84,9 +86,17 @@ more /etc/salt/minion
 
 ## Start salt-master and salt-minion
 
-This can be done using Ubuntu services or SaltStack command-line
+This can be done:
+- using the python script [start_saltstack.py](start_saltstack.py) from the host
+- or manually from the container using
+  - Ubuntu services
+  - or SaltStack command-line
+### Using python from the host
 
-### Using Ubuntu services
+```
+python3 start_saltstack.py
+```
+### Or using Ubuntu services from the container
 
 List all the services
 ```
@@ -102,7 +112,7 @@ service salt-minion start
 service salt-minion status
 ```
 
-### Or using SaltStack command-line
+### Or using SaltStack command-line from the container
 
 Start as a daemon (in background)
 ```
@@ -115,6 +125,7 @@ ps -ef | grep salt
 
 ## Start a salt-proxy daemon for each device
 
+If you did not use the python script [start_saltstack.py](start_saltstack.py) you also need to start a salt-proxy daemon for each device
 ```
 salt-proxy --proxyid=leaf1 -d
 salt-proxy --proxyid=leaf2 -d
@@ -182,8 +193,9 @@ salt 'leaf1' pillar.get pyeapi
 salt 'leaf1' pillar.item  pyeapi vlans
 ```
 
-## Flexible targeting system
+## SaltStack targeting system
 
+It is very flexible.
 ### Using list
 ```
 salt -L "minion1, leaf1" test.ping
@@ -218,12 +230,14 @@ salt -N eos test.ping
 salt -N leaves test.ping
 salt -N spines test.ping
 ```
-## List modules
+## SaltStack modules
+
+### List modules
 
 ```
 salt 'leaf1' sys.list_modules 'napalm*'
 ```
-## List the functions for a module
+### List the functions for a module
 
 ```
 salt 'leaf1' sys.list_functions net
@@ -231,7 +245,7 @@ salt 'leaf1' sys.list_functions napalm
 salt 'leaf1' sys.list_functions napalm_net
 ```
 
-## Get the documentation for a module
+### Get the documentation for a module
 
 Example with Napalm
 
