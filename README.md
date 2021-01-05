@@ -462,6 +462,7 @@ pip3 freeze
 ## Check the SaltStack Version
 
 ```
+salt --versions-report
 salt --version
 salt-master --version
 salt-minion --version
