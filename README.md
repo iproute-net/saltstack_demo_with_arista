@@ -48,7 +48,7 @@
   - [Verbose](#verbose)
   - [Start SaltStack in foreground with a debug log level](#start-saltstack-in-foreground-with-a-debug-log-level)
   - [Check log](#check-log)
-    - [To kill a process](#to-kill-a-process)
+  - [To kill a process](#to-kill-a-process)
   - [tcpdump](#tcpdump)
   - [Watch the event bus](#watch-the-event-bus)
   - [Check port connectivity](#check-port-connectivity)
@@ -57,6 +57,7 @@
 # About this repository
 
 Arista EOS automation demo using SaltStack.
+
 SaltStack is running in one single container.
 The content of this repository has been designed for one single SaltStack container.
 
@@ -564,7 +565,7 @@ more /var/log/salt/minion
 tail -f /var/log/salt/master
 ```
 
-### To kill a process
+## To kill a process
 ```
 ps -ef | grep salt
 kill PID
